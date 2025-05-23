@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Missão Proteção: A Corrida Pela Saúde</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #e0f2f1;
+    margin: 0;
+    padding: 20px;
+    color: #004d40;
+  }
+  header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  h1 {
+    margin-bottom: 5px;
+  }
+  #game {
+    max-width: 600px;
+    margin: 0 auto;
+    background: #ffffffdd;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px #00796b88;
+  }
+  .question {
+    margin-bottom: 15px;
+  }
+  button.answer-btn {
+    background: #00796b;
+    border: none;
+    color: white;
+    padding: 12px 18px;
+    margin: 8px 5px 8px 0;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s ease;
+  }
+  button.answer-btn:hover {
+    background: #004d40;
+  }
+  #result, #final-message {
+    text-align: center;
+    font-weight: bold;
+    margin-top: 20px;
+  }
+  .seal-container {
+    margin-top: 20px;
+    text-align: center;
+  }
+  .seal {
+    display: inline-block;
+    margin: 0 8px;
+    padding: 10px 14px;
+    background: #004d40;
+    color: white;
+    font-weight: bold;
+    border-radius: 8px;
+    user-select: none;
+  }
+  #start-btn {
+    background: #00796b;
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-size: 20px;
+    cursor: pointer;
+    display: block;
+    margin: 30px auto;
+    transition: background 0.3s ease;
+  }
+  #start-btn:hover {
+    background: #004d40;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Missão Proteção: A Corrida Pela Saúde</h1>
+  <p>Complete as 4 fases e conquiste os selos de proteção!</p>
+</header>
+
+<div id="game">
+  <button id="start-btn">Iniciar Missão</button>
+</div>
+
+<script>
+  const gameDiv = document.getElementById('game');
+  const startBtn = document.getElementById('start-btn');
+
+  const phases = [
+    {
+      title: "Fase 1: Camisinha Sempre!",
+      questions: [
+        {
+          question: "Você está numa festa e esqueceu a camisinha. O que faz?",
+          answers: [
+            { text: "A) Volta para buscar", correct: true },
+            { text: "B) Transa sem camisinha", correct: false },
+            { text: "C) Finge que não quer", correct: false },
+          ]
+        },
+        {
+          question: "Qual a melhor forma de usar a camisinha?",
+          answers: [
+            { text: "A) Usar do começo ao fim da relação", correct: true },
+            { text: "B) Só usar na penetração", correct: false },
+            { text: "C) Usar com óleo para facilitar", correct: false },
+          ]
+        },
+      ],
+      sealName: "Selo da Camisinha"
+    },
+    {
+      title: "Fase 2: Testagem Consciente",
+      questions: [
+        {
+          question: "Com que frequência é recomendado fazer testes para ISTs se você é sexualmente ativo?",
+          answers: [
+            { text: "A) Só se apresentar sintomas", correct: false },
+            { text: "B) A cada 6 meses ou ao trocar de parceiro", correct: true },
+            { text: "C) Nunca, se usar camisinha", correct: false },
+          ]
+        },
+        {
+          question: "Testar-se é importante porque:",
+          answers: [
+            { text: "A) Ajuda a diagnosticar e tratar cedo", correct: true },
+            { text: "B) É perda de tempo", correct: false },
+            { text: "C) Só serve para o médico ganhar dinheiro", correct: false },
+          ]
+        },
+      ],
+      sealName: "Selo da Testagem"
+    },
+    {
+      title: "Fase 3: Vacinação Inteligente",
+      questions: [
+        {
+          question: "Qual vacina ajuda a prevenir o HPV, uma IST comum?",
+          answers: [
+            { text: "A) Vacina contra o HPV", correct: true },
+            { text: "B) Vacina contra gripe", correct: false },
+            { text: "C) Vacina contra catapora", correct: false },
+          ]
+        },
+        {
+          question: "Vacinar-se contra Hepatite B é importante porque:",
+          answers: [
+            { text: "A) Hepatite B pode ser transmitida sexualmente", correct: true },
+            { text: "B) Hepatite B é só para crianças", correct: false },
+            { text: "C) Hepatite B não tem vacina", correct: false },
+          ]
+        },
+      ],
+      sealName: "Selo da Vacina"
+    },
+    {
+      title: "Fase 4: Comunicação e Consentimento",
+      questions: [
+        {
+          question: "Se seu parceiro(a) não quer usar camisinha, o que você deve fazer?",
+          answers: [
+            { text: "A) Aceitar para não brigar", correct: false },
+            { text: "B) Conversar e respeitar os limites", correct: true },
+            { text: "C) Fingir que está tudo bem", correct: false },
+          ]
+        },
+        {
+          question: "Consentimento significa:",
+          answers: [
+            { text: "A) Concordância clara e livre entre as pessoas", correct: true },
+            { text: "B) Fazer algo só porque os outros querem", correct: false },
+            { text: "C) Aceitar tudo para evitar problemas", correct: false },
+          ]
+        },
+      ],
+      sealName: "Selo do Respeito"
+    }
+  ];
+
+  let currentPhase = 0;
+  let currentQuestion = 0;
+  let seals = [];
+
+  startBtn.addEventListener('click', startGame);
+
+  function startGame() {
+    startBtn.style.display = 'none';
+    currentPhase = 0;
+    seals = [];
+    loadPhase();
+  }
+
+  function loadPhase() {
+    gameDiv.innerHTML = '';
+    const phase = phases[currentPhase];
+    const title = document.createElement('h2');
+    title.textContent = phase.title;
+    gameDiv.appendChild(title);
+    currentQuestion = 0;
+    loadQuestion();
+  }
+
+  function loadQuestion() {
+    gameDiv.querySelectorAll('.question, .answer-btn').forEach(e => e.remove());
+    const phase = phases[currentPhase];
+    const q = phase.questions[currentQuestion];
+
+    const questionText = document.createElement('p');
+    questionText.className = 'question';
+    questionText.textContent = q.question;
+    gameDiv.appendChild(questionText);
+
+    q.answers.forEach((ans, idx) => {
+      const btn = document.createElement('button');
+      btn.className = 'answer-btn';
+      btn.textContent = ans.text;
+      btn.onclick = () => answerQuestion(ans.correct);
+      gameDiv.appendChild(btn);
+    });
+  }
+
+  function answerQuestion(correct) {
+    const feedback = document.createElement('p');
+    feedback.id = 'result';
+
+    if (correct) {
+      feedback.textContent = 'Resposta correta! Parabéns!';
+    } else {
+      feedback.textContent = 'Resposta errada. Tente a próxima!';
+    }
+
+    // Remove botões para evitar respostas múltiplas
+    gameDiv.querySelectorAll('button.answer-btn').forEach(b => b.disabled = true);
+    gameDiv.appendChild(feedback);
+
+    setTimeout(() => {
+      nextStep(correct);
+    }, 1500);
+  }
+
+  function nextStep(correct) {
+    if (correct) {
+      currentQuestion++;
+      const phase = phases[currentPhase];
+      if (currentQuestion < phase.questions.length) {
+        loadQuestion();
+      } else {
+        seals.push(phase.sealName);
+        showSealAndNextPhase();
+      }
+    } else {
+      currentQuestion++;
+      const phase = phases[currentPhase];
+      if (currentQuestion < phase.questions.length) {
+        loadQuestion();
+      } else {
+        showSealAndNextPhase();
+      }
+    }
+  }
+
+  function showSealAndNextPhase() {
+    gameDiv.innerHTML = '';
+
+    if (seals.length > currentPhase) {
+      const sealDiv = document.createElement('div');
+      sealDiv.className = 'seal-container';
+      const seal = document.createElement('div');
+      seal.className = 'seal';
+      seal.textContent = seals[currentPhase];
+      sealDiv.appendChild(seal);
+      gameDiv.appendChild(sealDiv);
+    }
+
+    const nextBtn = document.createElement('button');
+    nextBtn.id = 'start-btn';
+    nextBtn.textContent = (currentPhase + 1) < phases.length ? 'Próxima Fase' : 'Finalizar Missão';
+    nextBtn.onclick = () => {
+      currentPhase++;
+      if (currentPhase < phases.length) {
+        loadPhase();
+      } else {
+        showFinalResult();
+      }
+    };
+
+    gameDiv.appendChild(nextBtn);
+  }
+
+  function showFinalResult() {
+    gameDiv.innerHTML = '';
+    const title = document.createElement('h2');
+    title.textContent = 'Missão Concluída!';
+    gameDiv.appendChild(title);
+
+    const resultMsg = document.createElement('p');
+    resultMsg.id = 'final-message';
+
+    if (seals.length === phases.length) {
+      resultMsg.textContent = 'Parabéns! Você conquistou todos os Selos e é um Agente da Missão Proteção!';
+    } else {
+      resultMsg.textContent = `Você conquistou ${seals.length} de ${phases.length} Selos. Tente novamente para completar a missão!`;
+    }
+    gameDiv.appendChild(resultMsg);
+
+    const restartBtn = document.createElement('button');
+    restartBtn.id = 'start-btn';
+    restartBtn.textContent = 'Jogar Novamente';
+    restartBtn.onclick = () => {
+      startGame();
+    };
+
+    gameDiv.appendChild(restartBtn);
+  }
+</script>
+
+</body>
+</html>
