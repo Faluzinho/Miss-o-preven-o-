@@ -2,81 +2,131 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 <title>Missão Proteção: A Corrida Pela Saúde</title>
 <style>
   body {
     font-family: Arial, sans-serif;
     background: #e0f2f1;
     margin: 0;
-    padding: 20px;
+    padding: 15px;
     color: #004d40;
+    -webkit-tap-highlight-color: transparent;
   }
   header {
     text-align: center;
     margin-bottom: 20px;
+    animation: fadeInDown 1s ease forwards;
   }
   h1 {
     margin-bottom: 5px;
+    font-size: 1.8em;
   }
   #game {
-    max-width: 600px;
+    max-width: 480px;
     margin: 0 auto;
     background: #ffffffdd;
     padding: 20px;
     border-radius: 12px;
     box-shadow: 0 4px 8px #00796b88;
+    animation: fadeInUp 1s ease forwards;
   }
   .question {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    font-size: 1.2em;
+    animation: fadeIn 0.8s ease forwards;
   }
   button.answer-btn {
     background: #00796b;
     border: none;
     color: white;
-    padding: 12px 18px;
-    margin: 8px 5px 8px 0;
-    border-radius: 8px;
+    padding: 16px 24px;
+    margin: 10px 6px 10px 0;
+    border-radius: 12px;
     cursor: pointer;
-    font-size: 16px;
-    transition: background 0.3s ease;
+    font-size: 18px;
+    transition: background 0.3s ease, transform 0.2s ease;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    animation: popIn 0.5s ease forwards;
   }
-  button.answer-btn:hover {
+  button.answer-btn:hover, button.answer-btn:focus {
     background: #004d40;
+    outline: none;
+    transform: scale(1.05);
+  }
+  button.answer-btn:disabled {
+    background: #aaa;
+    cursor: not-allowed;
+    transform: none;
   }
   #result, #final-message {
     text-align: center;
     font-weight: bold;
-    margin-top: 20px;
+    margin-top: 25px;
+    font-size: 1.3em;
+    animation: fadeIn 1s ease forwards;
   }
   .seal-container {
-    margin-top: 20px;
+    margin-top: 30px;
     text-align: center;
+    animation: fadeIn 1s ease forwards;
   }
   .seal {
     display: inline-block;
-    margin: 0 8px;
-    padding: 10px 14px;
+    margin: 0 10px;
+    padding: 14px 18px;
     background: #004d40;
     color: white;
     font-weight: bold;
-    border-radius: 8px;
+    border-radius: 12px;
     user-select: none;
+    font-size: 1.1em;
+    box-shadow: 0 0 8px #004d40aa;
+    animation: glow 2s infinite alternate;
   }
   #start-btn {
     background: #00796b;
     color: white;
     border: none;
-    padding: 14px 28px;
-    border-radius: 12px;
-    font-size: 20px;
+    padding: 18px 32px;
+    border-radius: 16px;
+    font-size: 22px;
     cursor: pointer;
     display: block;
-    margin: 30px auto;
-    transition: background 0.3s ease;
+    margin: 40px auto;
+    max-width: 100%;
+    box-sizing: border-box;
+    transition: background 0.3s ease, transform 0.2s ease;
+    animation: popIn 0.5s ease forwards;
   }
-  #start-btn:hover {
+  #start-btn:hover, #start-btn:focus {
     background: #004d40;
+    outline: none;
+    transform: scale(1.05);
+  }
+
+  /* Animações CSS */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  @keyframes glow {
+    from { box-shadow: 0 0 8px #004d40aa; }
+    to { box-shadow: 0 0 20px #004d40ff; }
   }
 </style>
 </head>
@@ -204,27 +254,32 @@
     const phase = phases[currentPhase];
     const title = document.createElement('h2');
     title.textContent = phase.title;
+    title.style.animation = 'fadeIn 1s ease forwards';
     gameDiv.appendChild(title);
     currentQuestion = 0;
     loadQuestion();
   }
 
   function loadQuestion() {
-    gameDiv.querySelectorAll('.question, .answer-btn').forEach(e => e.remove());
+    // Remove antigas perguntas e botões
+    gameDiv.querySelectorAll('.question, .answer-btn, #result').forEach(e => e.remove());
     const phase = phases[currentPhase];
     const q = phase.questions[currentQuestion];
 
     const questionText = document.createElement('p');
     questionText.className = 'question';
     questionText.textContent = q.question;
+    questionText.style.animation = 'fadeIn 0.8s ease forwards';
     gameDiv.appendChild(questionText);
 
-    q.answers.forEach((ans, idx) => {
+    q.answers.forEach((ans) => {
       const btn = document.createElement('button');
       btn.className = 'answer-btn';
       btn.textContent = ans.text;
       btn.onclick = () => answerQuestion(ans.correct);
       gameDiv.appendChild(btn);
+      // delay animação sequencial
+      btn.style.animationDelay = (0.1 * (q.answers.indexOf(ans))) + 's';
     });
   }
 
@@ -234,17 +289,19 @@
 
     if (correct) {
       feedback.textContent = 'Resposta correta! Parabéns!';
+      feedback.style.color = '#2e7d32'; // verde
     } else {
       feedback.textContent = 'Resposta errada. Tente a próxima!';
+      feedback.style.color = '#c62828'; // vermelho
     }
 
-    // Remove botões para evitar respostas múltiplas
+    // Desabilita botões para evitar múltiplos cliques
     gameDiv.querySelectorAll('button.answer-btn').forEach(b => b.disabled = true);
     gameDiv.appendChild(feedback);
 
     setTimeout(() => {
       nextStep(correct);
-    }, 1500);
+    }, 1800);
   }
 
   function nextStep(correct) {
